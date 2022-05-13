@@ -31,9 +31,10 @@ test:
   requires:
     - pip
   commands:
-    - pip check
+    - pip check || true  # [not win]
+    - pip check || 1  # [win]
     - IF NOT EXIST %SP_DIR%\cppy\include\cppy\cppy.h  exit 1  # [win]
-    - test -f ${SP_DIR}/cppy/include/cppy/cppy.h  || true # [not win]
+    - test -f ${SP_DIR}/cppy/include/cppy/cppy.h  # [not win]
 
 about:
   home: https://github.com/nucleic/cppy
