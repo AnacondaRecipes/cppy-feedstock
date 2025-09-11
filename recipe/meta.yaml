@@ -12,7 +12,7 @@ source:
 build:
   skip: true  # [py<37]
   number: 0
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:
   host:
@@ -22,7 +22,6 @@ requirements:
     - setuptools_scm >=3.4.3
     - toml
     - wheel
-    - setuptools-scm >=3.4.3
   run:
     - python
     - setuptools >=61.2
@@ -30,13 +29,17 @@ requirements:
 test:
   imports:
     - cppy
+  source_files:
+    - tests
   requires:
     - pip
+    - pytest
   commands:
     - pip check || true  # [not win]
     - pip check || 1  # [win]
     - IF NOT EXIST %SP_DIR%\cppy\include\cppy\cppy.h  exit 1  # [win]
     - test -f ${SP_DIR}/cppy/include/cppy/cppy.h  # [not win]
+    - pytest -v tests
 
 about:
   home: https://github.com/nucleic/cppy
@@ -49,7 +52,7 @@ about:
     modules. The primary feature is a PyObject smart pointer which automatically
     handles reference counting and provides convenience methods for performing
     common object operations.
-  doc_url: https://cppy.readthedocs.io/en/latest/
+  doc_url: https://cppy.readthedocs.io
   dev_url: https://github.com/nucleic/cppy
 
 extra:
