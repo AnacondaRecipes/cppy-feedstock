@@ -11,7 +11,7 @@ source:
 
 build:
   skip: true  # [py<37]
-  number: 0
+  number: 1
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:
@@ -33,12 +33,20 @@ test:
   requires:
     - pip
     - pytest
+    - setuptools        # [py>313]
   commands:
     - pip check || true  # [not win]
     - pip check || 1  # [win]
-    - IF NOT EXIST %SP_DIR%\cppy\include\cppy\cppy.h  exit 1  # [win]
     - test -f ${SP_DIR}/cppy/include/cppy/cppy.h  # [not win]
     - pytest -v tests
+
+    # the cpp headers are shipped in the wheel; CFEP-27 moved py3.15's site-packages to
+    # %PREFIX%\lib\python\site-packages while conda-build 26.7.1 still reports %SP_DIR%
+    # as %PREFIX%\Lib\site-packages, hence the separate selector below.
+    # TODO: with conda-build >=26.9.0 (conda/conda-build#5563 takes SP_DIR from the
+    # python_site_packages_path record) drop the py>=315 line.
+    - IF NOT EXIST "%SP_DIR%\cppy\include\cppy\cppy.h" exit 1                           # [win and py<315]
+    - IF NOT EXIST "%PREFIX%\lib\python\site-packages\cppy\include\cppy\cppy.h" exit 1  # [win and py>=315]
 
 about:
   home: https://github.com/nucleic/cppy
