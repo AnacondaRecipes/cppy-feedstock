@@ -24,6 +24,7 @@ requirements:
     - wheel
   run:
     - python
+    - setuptools >=61.2
 
 test:
   imports:
@@ -33,7 +34,6 @@ test:
   requires:
     - pip
     - pytest
-    - setuptools        # [py>313]
   commands:
     - pip check || true  # [not win]
     - pip check || 1  # [win]
